@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 import importlib.util
 import os
-
 if __name__ == "__main__":
     path = os.path.join(os.path.dirname(__file__), "hidden_4.pyc")
 
