@@ -1,5 +1,7 @@
 #!/usr/bin/python3
-"""Script that adds arguments to a list and saves them to a JSON file."""
+"""Script that adds all arguments to a Python list
+and saves them to a JSON file.
+"""
 
 import sys
 
@@ -14,4 +16,5 @@ except Exception:
     my_list = []
 
 my_list.extend(sys.argv[1:])
+
 save_to_json_file(my_list, filename)
