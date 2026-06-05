@@ -1,5 +1,5 @@
--- Lists records of second_table where name is not NULL
-SELECT score, name
+-- Lists number of records with the same score in second_table
+SELECT score, COUNT(*) AS number
 FROM second_table
-WHERE name IS NOT NULL
-ORDER BY score DESC;
+GROUP BY score
+ORDER BY number DESC;
