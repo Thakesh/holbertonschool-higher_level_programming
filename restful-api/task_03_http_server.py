@@ -25,8 +25,7 @@ class SimpleAPIHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "application/json")
             self.end_headers()
 
-            json_data = json.dumps(data)
-            self.wfile.write(json_data.encode("utf-8"))
+            self.wfile.write(json.dumps(data).encode("utf-8"))
 
         # Status endpoint
         elif self.path == "/status":
@@ -40,7 +39,7 @@ class SimpleAPIHandler(BaseHTTPRequestHandler):
             self.send_response(404)
             self.send_header("Content-type", "text/plain")
             self.end_headers()
-            self.wfile.write(b"404 Not Found")
+            self.wfile.write(b"Not Found")
 
 
 def run_server():
