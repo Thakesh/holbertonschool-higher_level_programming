@@ -1,31 +1,57 @@
 #!/usr/bin/python3
-import re
+"""Module for generating invitation files from a template."""
+
 
 def generate_invitations(template, attendees):
-    if not template:
+    """Generate personalized invitation files."""
+
+    # Validate template type
+    if not isinstance(template, str):
+        print("Error: template must be a string")
+        return
+
+    # Validate attendees type
+    if not isinstance(attendees, list) or not all(
+        isinstance(attendee, dict) for attendee in attendees
+    ):
+        print("Error: attendees must be a list of dictionaries")
+        return
+
+    # Check if template is empty
+    if template.strip() == "":
         print("Template is empty, no output files generated.")
         return
 
-    if not attendees:
+    # Check if attendees list is empty
+    if len(attendees) == 0:
         print("No data provided, no output files generated.")
         return
 
-    if not isinstance(attendees, list):
-        print("Invalid data format.")
-        return
+    # Process each attendee
+    for index, attendee in enumerate(attendees, start=1):
+        output = template
 
-    placeholders = re.findall(r"\{(\w+)\}", template)
+        # Replace placeholders with attendee data
+        placeholders = [
+            "name",
+            "event_title",
+            "event_date",
+            "event_location"
+        ]
 
-    for i, attendee in enumerate(attendees, start=1):
-        content = template
-
-        for field in placeholders:
-            value = attendee.get(field, "N/A")
+        for key in placeholders:
+            value = attendee.get(key)
 
             if value is None:
                 value = "N/A"
 
-            content = content.replace(f"{{{field}}}", str(value))
+            output = output.replace("{" + key + "}", str(value))
 
-        with open(f"output_{i}.txt", "w", encoding="utf-8") as file:
-            file.write(content)
+        # Write output to file
+        filename = "output_{}.txt".format(index)
+
+        try:
+            with open(filename, "w") as file:
+                file.write(output)
+        except Exception as e:
+            print("Error writing file {}: {}".format(filename, e))
