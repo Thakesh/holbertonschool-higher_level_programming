@@ -1,28 +1,57 @@
 #!/usr/bin/python3
-"""Basic Flask application using Jinja templates."""
-
-from flask import Flask, render_template
-
-app = Flask(__name__)
+"""Module for generating invitation files from a template."""
 
 
-@app.route('/')
-def home():
-    """Render home page."""
-    return render_template('index.html')
+def generate_invitations(template, attendees):
+    """Generate personalized invitation files."""
 
+    # Validate template type
+    if not isinstance(template, str):
+        print("Error: template must be a string")
+        return
 
-@app.route('/about')
-def about():
-    """Render about page."""
-    return render_template('about.html')
+    # Validate attendees type
+    if not isinstance(attendees, list) or not all(
+        isinstance(attendee, dict) for attendee in attendees
+    ):
+        print("Error: attendees must be a list of dictionaries")
+        return
 
+    # Check if template is empty
+    if template.strip() == "":
+        print("Template is empty, no output files generated.")
+        return
 
-@app.route('/contact')
-def contact():
-    """Render contact page."""
-    return render_template('contact.html')
+    # Check if attendees list is empty
+    if len(attendees) == 0:
+        print("No data provided, no output files generated.")
+        return
 
+    # Process each attendee
+    for index, attendee in enumerate(attendees, start=1):
+        output = template
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+        # Replace placeholders with attendee data
+        placeholders = [
+            "name",
+            "event_title",
+            "event_date",
+            "event_location"
+        ]
+
+        for key in placeholders:
+            value = attendee.get(key)
+
+            if value is None:
+                value = "N/A"
+
+            output = output.replace("{" + key + "}", str(value))
+
+        # Write output to file
+        filename = "output_{}.txt".format(index)
+
+        try:
+            with open(filename, "w") as file:
+                file.write(output)
+        except Exception as e:
+            print("Error writing file {}: {}".format(filename, e))
