@@ -1,42 +1,31 @@
 #!/usr/bin/python3
-def generate_invitations(template_file, data_list):
-    try:
-        # Check if data list is valid
-        if not isinstance(data_list, list):
-            print("Error: data_list must be a list.")
-            return
+import re
 
-        # Read template
-        with open(template_file, "r", encoding="utf-8") as file:
-            template = file.read()
+def generate_invitations(template, attendees):
+    if not template:
+        print("Template is empty, no output files generated.")
+        return
 
-        # Check if template is empty
-        if not template.strip():
-            print("Error: Template file is empty.")
-            return
+    if not attendees:
+        print("No data provided, no output files generated.")
+        return
 
-        # Generate invitation files
-        for index, data in enumerate(data_list, start=1):
-            try:
-                if not isinstance(data, dict):
-                    print(f"Warning: Entry {index} is not a dictionary. Skipping.")
-                    continue
+    if not isinstance(attendees, list):
+        print("Invalid data format.")
+        return
 
-                invitation = template.format(**data)
+    placeholders = re.findall(r"\{(\w+)\}", template)
 
-                output_filename = f"output_{index}.txt"
+    for i, attendee in enumerate(attendees, start=1):
+        content = template
 
-                with open(output_filename, "w", encoding="utf-8") as output_file:
-                    output_file.write(invitation)
+        for field in placeholders:
+            value = attendee.get(field, "N/A")
 
-            except KeyError as missing_key:
-                print(
-                    f"Warning: Missing placeholder value "
-                    f"'{missing_key.args[0]}' in entry {index}. Skipping."
-                )
+            if value is None:
+                value = "N/A"
 
-    except FileNotFoundError:
-        print(f"Error: Template file '{template_file}' not found.")
+            content = content.replace(f"{{{field}}}", str(value))
 
-    except Exception as e:
-        print(f"Unexpected error: {e}")
+        with open(f"output_{i}.txt", "w", encoding="utf-8") as file:
+            file.write(content)
